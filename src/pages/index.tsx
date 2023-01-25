@@ -12,6 +12,7 @@ import { Input } from "../components/Input";
 import * as Style from "./style";
 import InputMask from "react-input-mask";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import cep from "cep-promise";
 
 export const Home = () => {
   const [formData, setFormData] = useState<{
@@ -20,6 +21,7 @@ export const Home = () => {
     hasPDF: true,
     invoiceAmount: 0,
   });
+  const [adress, setAdress] = useState<{ street?: string }>({});
   const [errors, setErrors] = useState<{ [x: string]: boolean }>({});
   const [value, setValue] = useState();
   const errorObject = {
@@ -33,6 +35,37 @@ export const Home = () => {
     },
   };
 
+  const convertBase64 = async (file: File) => {
+    const data: Promise<string | ArrayBuffer | null> = new Promise(
+      (resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
+      }
+    );
+    const base = await data;
+    return String(base).split("base64,")[1];
+  };
+
+  const setDocument = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e?.target && e?.target?.files?.length) {
+      if (e?.target?.files[0].size <= 2097152) {
+        const data: string = await convertBase64(e.target.files[0]);
+        setFormData({
+          ...formData,
+          document: data,
+          documentName: e?.target?.files[0].name
+        });
+      }
+    }
+  };
   const sucessObject: { color: "success"; error?: boolean; InputProps: any } = {
     error: false,
     color: "success",
@@ -83,6 +116,14 @@ export const Home = () => {
   const cepValidator = (cep: string) => {
     return cep.match(/^[0-9]{5}-[0-9]{3}$/);
   };
+  const getCep = async (value: string) => {
+    try {
+      const data = await cep(value);
+      if (data.street) setAdress(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const ValidateInput = (name: string, value: string | boolean | number) => {
     if (name === "tel") {
       if (phoneValidator(String(value))) {
@@ -114,6 +155,7 @@ export const Home = () => {
         setErrors({
           ...rest,
         });
+        getCep(String(value).replace(/[^0-9]/g, ""));
         return;
       }
     }
@@ -213,8 +255,18 @@ export const Home = () => {
             </div>
             {formData.hasPDF ? (
               <>
-                <input type="file" style={{ display: "none" }} />
-                <Button variant="outlined" color="primary" size="large">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="large"
+                  component="label"
+                >
+                  <input
+                    type="file"
+                    hidden
+                    accept="application/pdf"
+                    onChange={(e) => setDocument(e)}
+                  />
                   Enviar conta de luz
                 </Button>
               </>
@@ -237,9 +289,10 @@ export const Home = () => {
                   mask="99999-999"
                   maskChar=" "
                   onChange={(e) => OnChageValue("CEP", e.target.value)}
+                  value={String(formData.CEP)}
                   name="CEP"
                   label="CEP *"
-                  fullWidth
+                  fullWidth={!Boolean(!errors?.CEP && formData?.CEP)}
                   variant="standard"
                   onBlur={() => enableValidation("CEP")}
                   helperText={
@@ -255,16 +308,40 @@ export const Home = () => {
                     (props) => <Input {...props}></Input>
                   }
                 </InputMask>
+                <Input
+                  name="street"
+                  value={adress.street}
+                  disabled
+                  variant="standard"
+                  fullWidth
+                />
+                <Input
+                  onChange={(e) => OnChageValue("number", e.target.value)}
+                  name="number"
+                  label="Número *"
+                  variant="standard"
+                  fullWidth
+                />
+                <Input
+                  onChange={(e) => OnChageValue("complement", e.target.value)}
+                  name="complement"
+                  label="Complemento"
+                  variant="standard"
+                  fullWidth
+                />
               </>
             )}
 
             <p className="description">
               Arquivo suportado: <strong>PDF</strong>
             </p>
-            <p className="description">
-              Fique tranquilo(a), você pode enviar sua conta de luz após o
-              cadastro.{" "}
-            </p>
+            {!formData?.document ? (
+              <p className="description">
+                Fique tranquilo(a), você pode enviar sua conta de luz após o
+                cadastro.
+              </p>
+            ) : null}
+
             <div className="checkbox">
               <FormControlLabel
                 control={
