@@ -148,7 +148,7 @@ export const Home = () => {
               variant="standard"
               fullWidth
               onBlur={() => enableValidation("email")}
-              helperText={errors.name && "E-mail é obrigátorio"}
+              helperText={errors.email && "E-mail é obrigátorio"}
               {...(errors.email ? errorObject : {})}
             />
             <Input
