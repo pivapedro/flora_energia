@@ -15,6 +15,32 @@ export const Container = styled.div`
     font-weight: 500;
     text-align: center;
   }
+  & div.card {
+    background: rgba(33, 179, 30, 0.15);
+    border-radius: 8px;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    height: 3.533rem;
+    padding-left: 1.125rem;
+    padding-right: 0.625rem;
+    margin-top: 1rem;
+    gap: 15px;
+    & > p.name {
+      color: rgb(28, 27, 31);
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5rem;
+      & > span {
+        line-height: 1.5rem;
+        margin-top: 0.25rem;
+        color: rgb(49, 48, 51);
+        font-size: 0.875rem;
+        font-weight: 300;
+      }
+    }
+  }
   & > form > div > div.checkbox {
     width: 100%;
     margin: 10px 0;

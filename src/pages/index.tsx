@@ -13,7 +13,7 @@ import * as Style from "./style";
 import InputMask from "react-input-mask";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import cep from "cep-promise";
-
+import PostAddIcon from "@mui/icons-material/PostAdd";
 export const Home = () => {
   const [formData, setFormData] = useState<{
     [x: string]: string | boolean | number;
@@ -56,14 +56,13 @@ export const Home = () => {
 
   const setDocument = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target && e?.target?.files?.length) {
-      if (e?.target?.files[0].size <= 2097152) {
-        const data: string = await convertBase64(e.target.files[0]);
-        setFormData({
-          ...formData,
-          document: data,
-          documentName: e?.target?.files[0].name
-        });
-      }
+      const data: string = await convertBase64(e.target.files[0]);
+      setFormData({
+        ...formData,
+        document: data,
+        documentName: e?.target?.files[0].name,
+        documentSize: e?.target?.files[0].size,
+      });
     }
   };
   const sucessObject: { color: "success"; error?: boolean; InputProps: any } = {
@@ -165,7 +164,17 @@ export const Home = () => {
       [name]: true,
     });
   };
+  const formatBytes = (bytes, decimals = 2) => {
+    if (!+bytes) return "0 Bytes";
 
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  };
   useEffect(() => {
     console.log(errors);
     console.log(formData);
@@ -340,7 +349,16 @@ export const Home = () => {
                 Fique tranquilo(a), você pode enviar sua conta de luz após o
                 cadastro.
               </p>
-            ) : null}
+            ) : (
+              <div className="card">
+                <PostAddIcon />
+                <p className="name">
+                  {`${formData.documentName}`}
+                  <br />
+                  <span>{` ${formatBytes(formData.documentSize)}`}</span>
+                </p>
+              </div>
+            )}
 
             <div className="checkbox">
               <FormControlLabel
