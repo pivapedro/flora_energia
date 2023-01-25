@@ -15,6 +15,22 @@ export const Container = styled.div`
     font-weight: 500;
     text-align: center;
   }
+  &input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+  }
+  & div.wrapperContainer {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
   & div.card {
     background: rgba(33, 179, 30, 0.15);
     border-radius: 8px;

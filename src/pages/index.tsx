@@ -23,7 +23,6 @@ export const Home = () => {
   });
   const [adress, setAdress] = useState<{ street?: string }>({});
   const [errors, setErrors] = useState<{ [x: string]: boolean }>({});
-  const [value, setValue] = useState();
   const errorObject = {
     error: true,
     InputProps: {
@@ -124,6 +123,23 @@ export const Home = () => {
     }
   };
   const ValidateInput = (name: string, value: string | boolean | number) => {
+    if (
+      name === "hasPDF" ||
+      name === "invoiceAmount" ||
+      name === "terms" ||
+      name === "complete"
+    ) {
+      return;
+    }
+    if (name === "number") {
+      if (String(value).length > 0) {
+        const { number, ...rest } = errors;
+        setErrors({
+          ...rest,
+        });
+        return;
+      }
+    }
     if (name === "tel") {
       if (phoneValidator(String(value))) {
         const { tel, ...rest } = errors;
@@ -157,6 +173,13 @@ export const Home = () => {
         getCep(String(value).replace(/[^0-9]/g, ""));
         return;
       }
+    } else if (name === "number") {
+      if (typeof value === "string" && value.length) {
+        const { number, ...rest } = errors;
+        setErrors({
+          ...rest,
+        });
+      }
     }
 
     setErrors({
@@ -179,7 +202,34 @@ export const Home = () => {
     console.log(errors);
     console.log(formData);
   }, [errors, formData]);
-
+  useEffect(() => {
+    if (!formData.hasPDF) {
+      const { document, documentName, documentSize, ...rest } = formData;
+      setFormData({ ...rest });
+    }
+  }, [formData?.hasPDF]);
+  useEffect(() => {
+    if (Object.keys(errors).length === 0) {
+      if (
+        !formData.hasPDF &&
+        !!formData.CEP &&
+        !!formData.email &&
+        !!formData.invoiceAmount &&
+        !!formData.name &&
+        !!formData.number &&
+        !!formData.terms &&
+        !!formData.tel
+      ) {
+        console.log("entrou");
+        if (!formData?.complete) {
+          setFormData({
+            ...formData,
+            complete: true,
+          });
+        }
+      }
+    }
+  }, [formData, errors]);
   return (
     <>
       <Header />
@@ -293,51 +343,90 @@ export const Home = () => {
                   label="Valor médio da conta de luz *"
                   variant="standard"
                   fullWidth
+                  onBlur={() => enableValidation("invoiceAmount")}
                 />
-                <InputMask
-                  mask="99999-999"
-                  maskChar=" "
-                  onChange={(e) => OnChageValue("CEP", e.target.value)}
-                  value={String(formData.CEP)}
-                  name="CEP"
-                  label="CEP *"
-                  fullWidth={!Boolean(!errors?.CEP && formData?.CEP)}
-                  variant="standard"
-                  onBlur={() => enableValidation("CEP")}
-                  helperText={
-                    errors.CEP && String(formData.CEP).length === 0
-                      ? "CEP é obrigátorio"
-                      : errors.CEP && "Por favor digite um CEP válido"
-                  }
-                  {...(errors.CEP ? errorObject : {})}
-                  {...(!errors?.CEP && formData?.CEP ? sucessObject : {})}
-                >
-                  {
-                    //@ts-ignore
-                    (props) => <Input {...props}></Input>
-                  }
-                </InputMask>
-                <Input
-                  name="street"
-                  value={adress.street}
-                  disabled
-                  variant="standard"
-                  fullWidth
-                />
-                <Input
-                  onChange={(e) => OnChageValue("number", e.target.value)}
-                  name="number"
-                  label="Número *"
-                  variant="standard"
-                  fullWidth
-                />
-                <Input
-                  onChange={(e) => OnChageValue("complement", e.target.value)}
-                  name="complement"
-                  label="Complemento"
-                  variant="standard"
-                  fullWidth
-                />
+                {!adress.street ? (
+                  <InputMask
+                    mask="99999-999"
+                    maskChar=" "
+                    onChange={(e) => OnChageValue("CEP", e.target.value)}
+                    value={String(formData.CEP)}
+                    name="CEP"
+                    label="CEP *"
+                    variant="standard"
+                    onBlur={() => enableValidation("CEP")}
+                    helperText={
+                      errors.CEP && String(formData.CEP).length === 0
+                        ? "CEP é obrigátorio"
+                        : errors.CEP && "Por favor digite um CEP válido"
+                    }
+                    {...(errors.CEP ? errorObject : {})}
+                    {...(!errors?.CEP && formData?.CEP ? sucessObject : {})}
+                  >
+                    {
+                      //@ts-ignore
+                      (props) => <Input {...props}></Input>
+                    }
+                  </InputMask>
+                ) : (
+                  <div className="wrapperContainer">
+                    <InputMask
+                      mask="99999-999"
+                      maskChar=" "
+                      onChange={(e) => OnChageValue("CEP", e.target.value)}
+                      value={String(formData.CEP)}
+                      name="CEP"
+                      label="CEP *"
+                      variant="standard"
+                      onBlur={() => enableValidation("CEP")}
+                      helperText={
+                        errors.CEP && String(formData.CEP).length === 0
+                          ? "CEP é obrigátorio"
+                          : errors.CEP && "Por favor digite um CEP válido"
+                      }
+                      {...(errors.CEP ? errorObject : {})}
+                      {...(!errors?.CEP && formData?.CEP ? sucessObject : {})}
+                    >
+                      {
+                        //@ts-ignore
+                        (props) => <Input {...props}></Input>
+                      }
+                    </InputMask>
+                    <Input
+                      label="Endereço"
+                      name="street"
+                      value={adress.street}
+                      variant="standard"
+                      fullWidth
+                      {...sucessObject}
+                    />
+                    <Input
+                      onChange={(e) => OnChageValue("number", e.target.value)}
+                      name="number"
+                      type="number"
+                      helperText={
+                        errors.number && String(formData.number).length === 0
+                          ? "Número é obrigatório"
+                          : ""
+                      }
+                      {...(errors.number ? errorObject : {})}
+                      {...(!errors?.number && formData?.number
+                        ? sucessObject
+                        : {})}
+                      onBlur={() => enableValidation("number")}
+                      label="Número *"
+                      variant="standard"
+                    />
+                    <Input
+                      onChange={(e) =>
+                        OnChageValue("complement", e.target.value)
+                      }
+                      name="complement"
+                      label="Complemento"
+                      variant="standard"
+                    />
+                  </div>
+                )}
               </>
             )}
 
@@ -384,7 +473,12 @@ export const Home = () => {
                 }
               />
             </div>
-            <Button color="primary" size="large" disabled variant="contained">
+            <Button
+              color="primary"
+              size="large"
+              disabled={!formData?.complete}
+              variant="contained"
+            >
               Avançar
             </Button>
           </div>
