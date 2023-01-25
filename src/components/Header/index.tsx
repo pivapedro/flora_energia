@@ -7,9 +7,9 @@ export const Header: React.FC<{}> = () => {
   const goToHomePage = () => {
     window.location.href = "https://floraenergia.com.br/";
   };
-  const {  navBar } = useSelector((state: ApplicationState) => state);
+  const { navBar } = useSelector((state: ApplicationState) => state);
 
-   return (
+  return (
     <Style.Container>
       <div className="ContainerImage">
         <img
