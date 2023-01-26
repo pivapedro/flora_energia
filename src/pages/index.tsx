@@ -116,7 +116,16 @@ export const Home = () => {
   };
   const getCep = async (value: string) => {
     try {
-      const data = await cep(value);
+      const data = await cep(value)
+        .then((data) => data)
+        .catch((error) => {
+          setErrors({
+            ...errors,
+            CEP: true,
+          });
+          setAdress({});
+          return { street: "" };
+        });
       if (data.street) setAdress(data);
     } catch (error) {
       console.log(error);
@@ -198,17 +207,21 @@ export const Home = () => {
 
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
   };
-  useEffect(() => {
-    console.log(errors);
-    console.log(formData);
-  }, [errors, formData]);
+  const subimitForm = () => {
+
+  }
+
   useEffect(() => {
     if (!formData.hasPDF) {
       const { document, documentName, documentSize, ...rest } = formData;
       setFormData({ ...rest });
+    } else {
+      const { CEP, number, invoiceAmount, ...rest } = formData;
+      setFormData({ ...rest });
     }
   }, [formData?.hasPDF]);
   useEffect(() => {
+    //TODO FAZER VALIDAÇÃO POR PDF
     if (Object.keys(errors).length === 0) {
       if (
         !formData.hasPDF &&
@@ -220,15 +233,34 @@ export const Home = () => {
         !!formData.terms &&
         !!formData.tel
       ) {
-        console.log("entrou");
         if (!formData?.complete) {
           setFormData({
             ...formData,
             complete: true,
           });
         }
+      } else if (
+        formData.hasPDF &&
+        !!formData.email &&
+        !!formData.name &&
+        !!formData.terms &&
+        !!formData.document
+      ) {
+        if (!formData?.complete) {
+          setFormData({
+            ...formData,
+            complete: true,
+          });
+        }
+      } else {
+        if (formData.complete)
+          setFormData({
+            ...formData,
+            complete: false,
+          });
       }
     }
+    console.log(formData)
   }, [formData, errors]);
   return (
     <>
@@ -478,6 +510,7 @@ export const Home = () => {
               size="large"
               disabled={!formData?.complete}
               variant="contained"
+              onClick={subimitForm}
             >
               Avançar
             </Button>
