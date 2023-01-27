@@ -2,7 +2,7 @@ import { Reducer } from "redux";
 import { NavData, NavActionsTypes, IOptions } from "./types";
 
 const INITIAL_STATE: NavData = {
-  active: IOptions['about'],
+  active: IOptions["about"],
 };
 
 const reducer: Reducer<NavData> = (state = INITIAL_STATE, action) => {
@@ -10,8 +10,7 @@ const reducer: Reducer<NavData> = (state = INITIAL_STATE, action) => {
     case NavActionsTypes.GET_NAV:
       return state;
     case NavActionsTypes.SET_NAV:
-      return { ...state };
-
+      return { ...state, active: action.active };
     default:
       return state;
   }

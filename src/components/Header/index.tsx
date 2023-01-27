@@ -21,9 +21,9 @@ export const Header: React.FC<{}> = () => {
         />
       </div>
       <div className="ContainerNav">
-        <Navbar disabled={navBar.active === 0}>1 - Sobre você</Navbar>
-        <Navbar disabled={navBar.active === 1}>2 - Proposta</Navbar>
-        <Navbar disabled={navBar.active === 2}>3 - Assinatura</Navbar>
+        <Navbar disabled={navBar.active >= 0}>1 - Sobre você</Navbar>
+        <Navbar disabled={navBar.active >= 1}>2 - Proposta</Navbar>
+        <Navbar disabled={navBar.active >= 2}>3 - Assinatura</Navbar>
       </div>
     </Style.Container>
   );
