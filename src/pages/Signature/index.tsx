@@ -16,8 +16,9 @@ export const Signature = () => {
     <Style.Container>
       {" "}
       <Document file={`/termo.pdf`}>
-        <Page pageNumber={1} width={600} />
-      </Document>
+        <Page pageNumber={1}  width={600}  />
+        <Page pageNumber={2}  width={600} />
+       </Document>
     </Style.Container>
   );
 };
