@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Form } from "../../components/Form";
-import { Header } from "../../components/Header";
 import { Input } from "../../components/Input";
 import * as Style from "./style";
 import InputMask from "react-input-mask";
@@ -15,16 +14,17 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import cep from "cep-promise";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { useDispatch, useSelector } from "react-redux";
+import { NumericFormat } from "react-number-format";
 import { ApplicationState } from "../../store";
+import { IUser } from "../../store/ducks/User/types";
 
 export const About = () => {
-  const [formData, setFormData] = useState<{
-    [x: string]: string | boolean | number;
-  }>({
+  const [formData, setFormData] = useState<IUser>({
     hasPDF: true,
     invoiceAmount: 0,
   });
   const [adress, setAdress] = useState<{ street?: string }>({});
+  const [autoFocus, setAutoFocus] = useState<boolean>(false);
   const [errors, setErrors] = useState<{ [x: string]: boolean }>({});
   const dispatch = useDispatch();
   const { navBar } = useSelector((state: ApplicationState) => state);
@@ -142,6 +142,8 @@ export const About = () => {
       name === "hasPDF" ||
       name === "invoiceAmount" ||
       name === "terms" ||
+      name === "complement" ||
+      name === "code" ||
       name === "complete"
     ) {
       return;
@@ -155,9 +157,9 @@ export const About = () => {
         return;
       }
     }
-    if (name === "tel") {
+    if (name === "phone") {
       if (phoneValidator(String(value))) {
-        const { tel, ...rest } = errors;
+        const { phone, ...rest } = errors;
         setErrors({
           ...rest,
         });
@@ -202,6 +204,8 @@ export const About = () => {
       [name]: true,
     });
   };
+  console.log(errors)
+
   const formatBytes = (bytes, decimals = 2) => {
     if (!+bytes) return "0 Bytes";
 
@@ -215,6 +219,7 @@ export const About = () => {
   };
   const subimitForm = () => {
     dispatch({ type: "@nav/SET_OPTION", active: 1 });
+    dispatch({ type: "@user/SET_USER", user: formData });
   };
 
   useEffect(() => {
@@ -236,7 +241,7 @@ export const About = () => {
         !!formData.name &&
         !!formData.number &&
         !!formData.terms &&
-        !!formData.tel
+        !!formData.phone
       ) {
         if (!formData?.complete) {
           setFormData({
@@ -265,7 +270,10 @@ export const About = () => {
           });
       }
     }
+
+    console.log(formData);
   }, [formData, errors]);
+
   return (
     <>
       <Style.Container>
@@ -292,20 +300,20 @@ export const About = () => {
               mask="(99) 9 9999-9999"
               maskChar=" "
               onChange={(e) =>
-                OnChageValue("tel", e.target.value.replace(/[^0-9]/g, ""))
+                OnChageValue("phone", e.target.value.replace(/[^0-9]/g, ""))
               }
-              name="tel"
+              name="phone"
               label="Celular *"
               variant="standard"
               fullWidth
-              onBlur={() => enableValidation("tel")}
+              onBlur={() => enableValidation("phone")}
               helperText={
-                errors.tel && String(formData.tel).length === 0
+                errors.phone && String(formData.phone).length === 0
                   ? "Celular é obrigátorio"
-                  : errors.tel && "Por favor digite um celular válido"
+                  : errors.phone && "Por favor digite um celular válido"
               }
-              {...(errors.tel ? errorObject : {})}
-              {...(!errors?.tel && formData?.tel ? sucessObject : {})}
+              {...(errors.phone ? errorObject : {})}
+              {...(!errors?.phone && formData?.phone ? sucessObject : {})}
             >
               {
                 //@ts-ignore
@@ -366,20 +374,38 @@ export const About = () => {
               </>
             ) : (
               <>
-                <Input
-                  onChange={(e) =>
-                    OnChageValue(
-                      "invoiceAmount",
-                      e.target.value.replace(/[^0-9]/g, "")
-                    )
-                  }
-                  type="number"
-                  name="invoiceAmount"
-                  label="Valor médio da conta de luz *"
-                  variant="standard"
-                  fullWidth
-                  onBlur={() => enableValidation("invoiceAmount")}
-                />
+                <div>
+                  <div>
+                    <NumericFormat
+                      valueIsNumericString={true}
+                      name="invoiceAmount"
+                      onBlur={() => {
+                        enableValidation("invoiceAmount");
+                        setAutoFocus(false);
+                      }}
+                      onFocus={() => setAutoFocus(true)}
+                      autoFocus={autoFocus}
+                      customInput={(props: any) => (
+                        <Input
+                          variant="standard"
+                          label="Valor médio da conta de luz *"
+                          type="number"
+                          fullWidth
+                          color={"success"}
+                          {...props}
+                        />
+                      )}
+                      onValueChange={(values, sourceInfo) => {
+                        if (values.floatValue)
+                          OnChageValue("invoiceAmount", values.floatValue);
+                      }}
+                      decimalScale={2}
+                      thousandSeparator={"."}
+                      prefix={"R$ "}
+                      decimalSeparator={","}
+                    />
+                  </div>
+                </div>
                 {!adress.street ? (
                   <InputMask
                     mask="99999-999"
@@ -511,7 +537,7 @@ export const About = () => {
             <Button
               color="primary"
               size="large"
-          /*     disabled={!formData?.complete} */
+              disabled={!formData?.complete}
               variant="contained"
               onClick={subimitForm}
             >
