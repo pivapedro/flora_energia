@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  DialogActions,
-  DialogContent,
-  Divider,
-  Modal,
-  Typography,
-} from "@mui/material";
+import { Button, DialogActions, DialogContent } from "@mui/material";
 import { Form } from "../../components/Form";
 import { Input } from "../../components/Input";
 import * as Style from "./styles";
