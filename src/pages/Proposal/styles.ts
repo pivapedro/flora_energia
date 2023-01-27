@@ -96,3 +96,44 @@ export const Container = styled.div`
     }
   }
 `;
+
+export const ModalVideo = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+`;
+
+export const ModalFAQ = styled.div`
+  max-height: 360px;
+  & > ul {
+    list-style-type: none;
+    & > li {
+      margin-top: 0.5rem;
+      & > h4,
+      & > h6,
+      & > p {
+        margin: 0px;
+        color: rgb(31, 27, 30);
+      }
+      & > h4 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        line-height: 1.313rem;
+      }
+      & > div {
+        text-indent: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        & > h6 {
+          font-size: 1rem;
+          font-weight: 500;
+          line-height: 1.188rem;
+        }
+      }
+    }
+  }
+`;

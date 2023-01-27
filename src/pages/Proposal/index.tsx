@@ -16,6 +16,7 @@ import { ApplicationState } from "../../store";
 import { useSelector } from "react-redux";
 import { IUser } from "../../store/ducks/User/types";
 import { BootstrapDialog, BootstrapDialogTitle } from "../../components/Modal";
+import * as Modals from "./modals";
 
 export const Proposal = () => {
   const OnChageValue = (name: string, value: string | boolean | number) => {
@@ -27,7 +28,11 @@ export const Proposal = () => {
     }
   };
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
-  const [modal, setModal] = useState<{ open: boolean; content?: ReactNode }>({
+  const [modal, setModal] = useState<{
+    open: boolean;
+    title?: string;
+    content?: () => ReactNode;
+  }>({
     open: false,
   });
   const { user } = useSelector((state: ApplicationState) => state);
@@ -167,11 +172,27 @@ export const Proposal = () => {
           <Button
             color="primary"
             variant="outlined"
-            onClick={() => setModal({ open: true })}
+            onClick={() =>
+              setModal({
+                open: true,
+                content: () => <Modals.ContentFAQ />,
+                title: "Perguntas Frequentes",
+              })
+            }
           >
             Perguntas frequentes
           </Button>
-          <Button color="primary" variant="outlined">
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() =>
+              setModal({
+                open: true,
+                content: () => <Modals.ContentVideo />,
+                title: "Vídeo explicativo",
+              })
+            }
+          >
             Vídeo
           </Button>
         </div>
@@ -184,23 +205,18 @@ export const Proposal = () => {
         onClose={() => setModal({ open: false })}
         aria-labelledby="customized-dialog-title"
         open={modal.open}
+        sx={{ width: "100%" }}
+        fullWidth={true}
+        maxWidth="md"
       >
         <BootstrapDialogTitle
           id="customized-dialog-title"
           onClose={() => setModal({ open: false })}
         >
-          Perguntas frequentes
+          {modal?.title}
         </BootstrapDialogTitle>
-        <DialogContent dividers>
-          <Typography gutterBottom>
-            
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={() => setModal({ open: false })}>
-            Save changes
-          </Button>
-        </DialogActions>
+        <DialogContent>{modal?.content?.()}</DialogContent>
+        <DialogActions></DialogActions>
       </BootstrapDialog>
     </Style.Container>
   );
