@@ -33,6 +33,15 @@ export const Container = styled.div`
         margin-top: 1rem;
       }
     }
+    & > div.wrapperButton {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      max-width: 550px;
+      & > button {
+        width: 100%;
+      }
+    }
     & > label {
       padding: 1.5rem 0px;
     }

@@ -1,12 +1,22 @@
-import { Button, Divider } from "@mui/material";
+import {
+  Box,
+  Button,
+  DialogActions,
+  DialogContent,
+  Divider,
+  Modal,
+  Typography,
+} from "@mui/material";
 import { Form } from "../../components/Form";
 import { Input } from "../../components/Input";
 import * as Style from "./styles";
 import { NumericFormat } from "react-number-format";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { ApplicationState } from "../../store";
 import { useSelector } from "react-redux";
 import { IUser } from "../../store/ducks/User/types";
+import { BootstrapDialog, BootstrapDialogTitle } from "../../components/Modal";
+
 export const Proposal = () => {
   const OnChageValue = (name: string, value: string | boolean | number) => {
     if (value !== undefined || value !== "") {
@@ -17,6 +27,9 @@ export const Proposal = () => {
     }
   };
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
+  const [modal, setModal] = useState<{ open: boolean; content?: ReactNode }>({
+    open: false,
+  });
   const { user } = useSelector((state: ApplicationState) => state);
   const [formData, setFormData] = useState<IUser>({});
   useEffect(() => {
@@ -53,39 +66,90 @@ export const Proposal = () => {
           <label className="semiBold">
             <span>Quanto você passará a pagar</span>
             <span className="bold">
-              R${" "}
-              {typeof formData?.invoiceAmount === "number" &&
-                (
-                  (formData?.invoiceAmount * 50.56) / 100 +
-                  (formData?.invoiceAmount * 43.02) / 100
-                ).toFixed(2)}
+              <NumericFormat
+                displayType="text"
+                value={
+                  typeof formData?.invoiceAmount === "number"
+                    ? (formData?.invoiceAmount * 50.56) / 100 +
+                      (formData?.invoiceAmount * 43.02) / 100
+                    : undefined
+                }
+                decimalScale={2}
+                thousandSeparator={"."}
+                prefix={"R$ "}
+                decimalSeparator={","}
+              />
             </span>
           </label>
 
           <label>
             <span>Conta de luz da CPFL Paulista</span>
             <span>
-              R${" "}
-              {typeof formData?.invoiceAmount === "number" &&
-                ((formData?.invoiceAmount * 50.56) / 100)?.toFixed(2)}
+              <NumericFormat
+                displayType="text"
+                value={
+                  typeof formData?.invoiceAmount === "number"
+                    ? (formData?.invoiceAmount * 50.56) / 100
+                    : undefined
+                }
+                decimalScale={2}
+                thousandSeparator={"."}
+                prefix={"R$ "}
+                decimalSeparator={","}
+              />
             </span>
           </label>
           <label>
             <span>Fatura Flora </span>
             <span>
-              R${" "}
-              {typeof formData?.invoiceAmount === "number" &&
-                ((formData?.invoiceAmount * 43.02) / 100)?.toFixed(2)}
+              <NumericFormat
+                displayType="text"
+                value={
+                  typeof formData?.invoiceAmount === "number"
+                    ? (formData?.invoiceAmount * 43.02) / 100
+                    : undefined
+                }
+                decimalScale={2}
+                thousandSeparator={"."}
+                prefix={"R$ "}
+                decimalSeparator={","}
+              />
             </span>
           </label>
         </div>
         <label className="border bold">
           <span className="bold">Economia mensal</span>
-          <span className="bold large">R$ 93,58</span>
+          <span className="bold large">
+            <NumericFormat
+              displayType="text"
+              value={
+                typeof formData?.invoiceAmount === "number"
+                  ? (formData?.invoiceAmount * 6.42) / 100
+                  : undefined
+              }
+              decimalScale={2}
+              thousandSeparator={"."}
+              prefix={"R$ "}
+              decimalSeparator={","}
+            />
+          </span>
         </label>
         <label className="bold">
           <span className="bold">Economia anual</span>
-          <span className="bold large">R$ 93,58</span>
+          <span className="bold large">
+            <NumericFormat
+              displayType="text"
+              value={
+                typeof formData?.invoiceAmount === "number"
+                  ? ((formData?.invoiceAmount * 6.42) / 100) * 12
+                  : undefined
+              }
+              decimalScale={2}
+              thousandSeparator={"."}
+              prefix={"R$ "}
+              decimalSeparator={","}
+            />
+          </span>
         </label>
 
         <p className="title">Garantia de economia</p>
@@ -99,10 +163,45 @@ export const Proposal = () => {
             Basta solicitar seu desligamento com um aviso prévio de 90 dias.
           </p>
         </div>
+        <div className="wrapperButton">
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => setModal({ open: true })}
+          >
+            Perguntas frequentes
+          </Button>
+          <Button color="primary" variant="outlined">
+            Vídeo
+          </Button>
+        </div>
         <Button color="primary" size="large" variant="contained">
           Avançar
         </Button>
       </Form>
+
+      <BootstrapDialog
+        onClose={() => setModal({ open: false })}
+        aria-labelledby="customized-dialog-title"
+        open={modal.open}
+      >
+        <BootstrapDialogTitle
+          id="customized-dialog-title"
+          onClose={() => setModal({ open: false })}
+        >
+          Perguntas frequentes
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={() => setModal({ open: false })}>
+            Save changes
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
     </Style.Container>
   );
 };
