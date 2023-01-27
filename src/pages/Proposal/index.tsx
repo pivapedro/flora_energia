@@ -5,7 +5,7 @@ import * as Style from "./styles";
 import { NumericFormat } from "react-number-format";
 import { ReactNode, useEffect, useState } from "react";
 import { ApplicationState } from "../../store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IUser } from "../../store/ducks/User/types";
 import { BootstrapDialog, BootstrapDialogTitle } from "../../components/Modal";
 import * as Modals from "./modals";
@@ -27,11 +27,15 @@ export const Proposal = () => {
   }>({
     open: false,
   });
+  const dispatch = useDispatch();
   const { user } = useSelector((state: ApplicationState) => state);
   const [formData, setFormData] = useState<IUser>({});
   useEffect(() => {
     setFormData(user);
   }, [user]);
+  const submitProposal = () => {
+    dispatch({ type: "@nav/SET_OPTION", active: 2 });
+  };
   return (
     <Style.Container>
       <h2> Aqui está sua proposta!</h2>
@@ -188,7 +192,12 @@ export const Proposal = () => {
             Vídeo
           </Button>
         </div>
-        <Button color="primary" size="large" variant="contained">
+        <Button
+          color="primary"
+          size="large"
+          variant="contained"
+          onClick={submitProposal}
+        >
           Avançar
         </Button>
       </Form>
