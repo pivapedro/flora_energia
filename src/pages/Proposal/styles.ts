@@ -8,6 +8,11 @@ export const Container = styled.div`
   gap: 10px;
   width: 100%;
   height: 100%;
+  @media (max-width: 900px) {
+    padding-right: 2rem;
+    padding-left: 2rem;
+    padding-bottom: 2rem;
+  }
   & > h2 {
     margin: 3rem 0px 1rem;
     color: rgb(28, 27, 31);
@@ -38,6 +43,9 @@ export const Container = styled.div`
       gap: 1rem;
       margin-bottom: 1rem;
       max-width: 550px;
+      @media (max-width: 900px) {
+        flex-wrap: wrap;
+      }
       & > button {
         width: 100%;
       }

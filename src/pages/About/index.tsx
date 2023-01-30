@@ -81,6 +81,7 @@ export const About = () => {
       ),
     },
   };
+  console.log(errors);
 
   const OnChageValue = (name: string, value: string | boolean | number) => {
     if (value !== undefined || value !== "") {
@@ -204,7 +205,7 @@ export const About = () => {
       [name]: true,
     });
   };
-  console.log(errors)
+  console.log(errors);
 
   const formatBytes = (bytes, decimals = 2) => {
     if (!+bytes) return "0 Bytes";
@@ -229,6 +230,19 @@ export const About = () => {
     } else {
       const { CEP, number, invoiceAmount, ...rest } = formData;
       setFormData({ ...rest });
+      if (errors.invoiceAmount) {
+        const { invoiceAmount, ...rest } = errors;
+        setErrors({
+          ...rest,
+        });
+      }
+
+      if(errors.CEP){
+        const { CEP, ...rest } = errors;
+        setErrors({
+          ...rest,
+        });
+      }
     }
   }, [formData?.hasPDF]);
   useEffect(() => {
