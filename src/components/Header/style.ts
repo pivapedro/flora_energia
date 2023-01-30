@@ -19,7 +19,20 @@ export const Container = styled.header`
   }
   & > div.ContainerImage {
     padding: 8px 1.625rem;
+    @media (max-width: 900px) {
+      display: none;
+    }
   }
+  & > div.ContainerIcons {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 15px 5px 15px;
+    height: 53px;
+    @media (min-width: 900px) {
+      display: none;
+    }
+  }
+
   & > div.ContainerNav {
     display: flex;
     gap: 0.25rem;

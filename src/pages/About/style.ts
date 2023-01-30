@@ -8,6 +8,7 @@ export const Container = styled.div`
   gap: 10px;
   width: 100%;
   height: 100%;
+
   & > h2 {
     margin: 3rem 0px 1rem;
     color: rgb(28, 27, 31);

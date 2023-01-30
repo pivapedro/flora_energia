@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { ApplicationState } from "../../store";
 import { Navbar } from "../Navbar";
 import * as Style from "./style";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 export const Header: React.FC<{}> = () => {
   const goToHomePage = () => {
     window.location.href = "https://floraenergia.com.br/";
@@ -11,7 +13,7 @@ export const Header: React.FC<{}> = () => {
 
   return (
     <Style.Container>
-      <div className="ContainerImage">
+      <div className="ContainerImage desk">
         <img
           onClick={goToHomePage}
           src={
@@ -19,6 +21,10 @@ export const Header: React.FC<{}> = () => {
           }
           alt="logotipo flora"
         />
+      </div>
+      <div className="ContainerIcons mobile">
+        <KeyboardArrowLeftIcon onClick={goToHomePage} />
+        <ChatOutlinedIcon />
       </div>
       <div className="ContainerNav">
         <Navbar disabled={navBar.active >= 0}>1 - Sobre você</Navbar>
